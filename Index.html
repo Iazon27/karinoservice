@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ثبت خرابی الکتروموتور</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --card: #1c2330;
+      --border: #30363d;
+      --accent: #f97316;
+      --accent2: #fb923c;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --success: #3fb950;
+      --error: #f85149;
+      --input-bg: #0d1117;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Vazirmatn', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px; right: -200px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -200px; left: -200px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(249,115,22,0.07) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 620px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+      animation: fadeDown 0.6s ease;
+    }
+
+    .logo-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 80px; height: 80px;
+      background: linear-gradient(135deg, var(--accent), #ea580c);
+      border-radius: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 32px rgba(249,115,22,0.35);
+      animation: pulse 3s infinite;
+    }
+
+    .logo-wrap svg {
+      width: 44px; height: 44px;
+      fill: white;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 8px 32px rgba(249,115,22,0.35); }
+      50% { box-shadow: 0 8px 48px rgba(249,115,22,0.55); }
+    }
+
+    .header h1 {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      color: var(--text);
+    }
+
+    .header h1 span { color: var(--accent); }
+
+    .header p {
+      margin-top: 8px;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    /* Card */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      animation: fadeUp 0.6s ease 0.1s both;
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .field-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .field-group.single { grid-template-columns: 1fr; }
+    .field-group.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    label span.req { color: var(--accent); margin-right: 2px; }
+
+    input, select, textarea {
+      background: var(--input-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+      direction: rtl;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(249,115,22,0.15);
+    }
+
+    select option { background: var(--surface); }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    /* Motor type toggle */
+    .motor-toggle {
+      display: flex;
+      background: var(--input-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 4px;
+      gap: 4px;
+    }
+
+    .motor-toggle input { display: none; }
+
+    .motor-toggle label {
+      flex: 1;
+      text-align: center;
+      padding: 9px 8px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      transition: all 0.2s;
+      margin: 0;
+    }
+
+    .motor-toggle input:checked + label {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 4px 12px rgba(249,115,22,0.3);
+    }
+
+    /* Divider */
+    .divider { margin: 24px 0 20px; }
+
+    /* Submit */
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, var(--accent), #ea580c);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 6px 20px rgba(249,115,22,0.3);
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(249,115,22,0.45);
+    }
+
+    .submit-btn:active { transform: translateY(0); }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 9999;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+      opacity: 0;
+      white-space: nowrap;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.success { background: #1a3a22; border: 1px solid var(--success); color: var(--success); }
+    .toast.error { background: #3a1a1a; border: 1px solid var(--error); color: var(--error); }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--muted);
+      animation: fadeUp 0.6s ease 0.3s both;
+    }
+
+    /* Responsive */
+    @media (max-width: 500px) {
+      .card { padding: 22px 18px; }
+      .field-group { grid-template-columns: 1fr; }
+      .field-group.triple { grid-template-columns: 1fr 1fr; }
+      .header h1 { font-size: 21px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-wrap">
+      <!-- Motor/gear icon -->
+      <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <path d="M32 8a24 24 0 1 0 0 48A24 24 0 0 0 32 8zm0 38a14 14 0 1 1 0-28 14 14 0 0 1 0 28z"/>
+        <path d="M32 24a8 8 0 1 0 0 16 8 8 0 0 0 0-16z"/>
+        <path d="M28 4h8v8h-8zM28 52h8v8h-8zM4 28v8h8v-8zM52 28v8h8v-8zM10.1 10.1l5.66 5.66-5.66 5.65-5.65-5.65zM43.17 43.17l5.66 5.66-5.66 5.65-5.65-5.65zM10.1 53.9l5.66-5.66 5.65 5.66-5.65 5.65zM43.17 20.83l5.66-5.66 5.65 5.66-5.65 5.65z"/>
+      </svg>
+    </div>
+    <h1>ثبت <span>خرابی</span> الکتروموتور</h1>
+    <p>اطلاعات خرابی را وارد کنید — پیام فوری به تعمیرکار ارسال می‌شود</p>
+  </div>
+
+  <!-- Form Card -->
+  <div class="card">
+
+    <!-- Customer Info -->
+    <div class="section-title">اطلاعات مشتری</div>
+
+    <div class="field-group">
+      <div class="field">
+        <label>نام و نام خانوادگی <span class="req">*</span></label>
+        <input type="text" id="customerName" placeholder="مثلاً: علی رضایی"/>
+      </div>
+      <div class="field">
+        <label>شماره تماس <span class="req">*</span></label>
+        <input type="tel" id="phone" placeholder="09xxxxxxxxx" dir="ltr"/>
+      </div>
+    </div>
+
+    <div class="field-group single">
+      <div class="field">
+        <label>آدرس / محل کار</label>
+        <input type="text" id="address" placeholder="شهر، محله یا آدرس کارگاه"/>
+      </div>
+    </div>
+
+    <!-- Motor Info -->
+    <div class="divider">
+      <div class="section-title">مشخصات موتور</div>
+    </div>
+
+    <div class="field-group">
+      <div class="field">
+        <label>نوع الکتروموتور <span class="req">*</span></label>
+        <div class="motor-toggle">
+          <input type="radio" name="motorType" id="single" value="تک فاز" checked/>
+          <label for="single">⚡ تک فاز</label>
+          <input type="radio" name="motorType" id="three" value="سه فاز"/>
+          <label for="three">⚡⚡ سه فاز</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>توان موتور (کیلووات)</label>
+        <input type="text" id="power" placeholder="مثلاً: 1.5 kW" dir="ltr"/>
+      </div>
+    </div>
+
+
+
+    <!-- Fault Info -->
+    <div class="divider">
+      <div class="section-title">نوع خرابی</div>
+    </div>
+
+    <div class="field-group">
+      <div class="field">
+        <label>علامت خرابی <span class="req">*</span></label>
+        <select id="faultType">
+          <option value="">-- انتخاب کنید --</option>
+          <option>روشن نمی‌شود</option>
+          <option>صدای غیرعادی دارد</option>
+          <option>گرم می‌کند (اورلود)</option>
+          <option>دور کم دارد</option>
+          <option>جریان زیاد می‌کشد</option>
+          <option>سیم‌پیچ سوخته</option>
+          <option>بلبرینگ خراب</option>
+          <option>لرزش زیاد دارد</option>
+          <option>خازن خراب (تک فاز)</option>
+          <option>کلید گریز از مرکز خراب</option>
+          <option>سایر موارد</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>اولویت تعمیر <span class="req">*</span></label>
+        <select id="priority">
+          <option value="معمولی 🟢">معمولی 🟢</option>
+          <option value="فوری 🟡">فوری 🟡</option>
+          <option value="خیلی فوری 🔴">خیلی فوری 🔴</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field-group single">
+      <div class="field">
+        <label>توضیحات بیشتر</label>
+        <textarea id="description" placeholder="هر توضیح اضافه‌ای درباره خرابی، محل نصب موتور یا شرایط کار آن بنویسید..."></textarea>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <button class="submit-btn" id="submitBtn" onclick="sendToTelegram()">
+      <span id="btnText">📨 ارسال گزارش خرابی</span>
+      <div class="spinner" id="spinner"></div>
+    </button>
+
+  </div>
+
+  <div class="footer">⚙️ سیستم ثبت خرابی الکتروموتور — پیام مستقیم به تلگرام تعمیرکار</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  const BOT_TOKEN = '8885649054:AAH-kmLGWtsHcYmnlXyyKOEq35oEu51NeMQ';
+  const CHAT_ID   = '8192110697';
+
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + type;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 4000);
+  }
+
+  async function sendToTelegram() {
+    const name      = document.getElementById('customerName').value.trim();
+    const phone     = document.getElementById('phone').value.trim();
+    const address   = document.getElementById('address').value.trim();
+    const motorType = document.querySelector('input[name="motorType"]:checked').value;
+    const power     = document.getElementById('power').value.trim();
+    const faultType = document.getElementById('faultType').value;
+    const priority  = document.getElementById('priority').value;
+    const desc      = document.getElementById('description').value.trim();
+
+    if (!name)      return showToast('⚠️ نام مشتری را وارد کنید', 'error');
+    if (!phone)     return showToast('⚠️ شماره تماس را وارد کنید', 'error');
+    if (!faultType) return showToast('⚠️ نوع خرابی را انتخاب کنید', 'error');
+
+    const now = new Date().toLocaleString('fa-IR');
+
+    const message = `
+🔧 *گزارش خرابی الکتروموتور*
+
+👤 *مشتری:* ${name}
+📞 *تلفن:* ${phone}
+📍 *آدرس:* ${address || '—'}
+
+─────────────────────
+⚙️ *مشخصات موتور*
+• نوع: ${motorType}
+• توان: ${power || '—'}
+
+─────────────────────
+🚨 *خرابی:* ${faultType}
+🎯 *اولویت:* ${priority}
+
+📝 *توضیحات:* ${desc || '—'}
+
+─────────────────────
+🕐 ${now}
+    `.trim();
+
+    const btn     = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const spinner = document.getElementById('spinner');
+
+    btn.disabled      = true;
+    btnText.style.display = 'none';
+    spinner.style.display = 'block';
+
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: CHAT_ID,
+          text: message,
+          parse_mode: 'Markdown'
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.ok) {
+        showToast('✅ گزارش با موفقیت ارسال شد!', 'success');
+        // reset form
+        ['customerName','phone','address','power','description'].forEach(id => {
+          document.getElementById(id).value = '';
+        });
+        document.getElementById('faultType').value = '';
+        document.getElementById('priority').value = 'معمولی 🟢';
+        document.querySelector('input[name="motorType"][value="تک فاز"]').checked = true;
+      } else {
+        showToast('❌ خطا در ارسال: ' + (data.description || 'نامشخص'), 'error');
+      }
+    } catch (e) {
+      showToast('❌ اتصال به تلگرام برقرار نشد', 'error');
+    } finally {
+      btn.disabled      = false;
+      btnText.style.display = 'inline';
+      spinner.style.display = 'none';
+    }
+  }
+</script>
+</body>
+</html>
